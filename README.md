@@ -1,4 +1,4 @@
-# 🏥 AI Clinic Management System (CuraCloud)
+# 🏥 AI Clinic Management System 
 
 **AI Clinic Management System** ek modern, data-driven solution hai jo healthcare providers aur patients ke darmiyan gap ko khatam karta hai. Yeh system paperwork ko khatam karke clinics ko intelligent automation aur sleek dark-themed UI ke saath digital banata hai.
 
