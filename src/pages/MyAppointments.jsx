@@ -20,8 +20,8 @@ const MyAppointments = () => {
   });
   const [submitting, setSubmitting] = useState(false);
 
-  console.log(doctors)
-  console.log(setDoctors)
+  // console.log(doctors)
+  // console.log(setDoctors)
   useEffect(() => {
     fetchAppointments();
     fetchDoctors();
