@@ -29,14 +29,14 @@ const Home = () => {
       {/* --- HEADER --- */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5 backdrop-blur-md bg-[#020617]/80 sticky top-0 z-50 border-b border-slate-800/50">
         <div className="flex items-center gap-2 group cursor-pointer">
-          <div className="bg-blue-600 p-1.5 rounded-lg group-hover:rotate-12 transition-transform">
-            <Stethoscope className="text-white" size={24} />
+          <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-xl group-hover:rotate-[10deg] transition-all duration-300 shadow-lg shadow-blue-500/20">
+            <Activity className="text-white" size={22} />
           </div>
-          <span className="text-xl font-bold tracking-tight text-white">
-            Clinic<span className="text-blue-500"> System</span>
+
+          <span className="text-2xl font-black tracking-tighter text-white">
+            Opti<span className="text-blue-500"> Clinic </span>
           </span>
         </div>
-
         <div className="flex gap-4 items-center">
           <Link
             to={"/login"}
@@ -124,6 +124,42 @@ const Home = () => {
               See all features <ChevronRight size={18} />
             </button>
           </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Existing Features */}
+            <FeatureCard
+              icon={<Calendar className="text-blue-400" />}
+              title="Smart Scheduling"
+              desc="AI-powered booking system that eliminates double-booking and reduces no-shows."
+            />
+            <FeatureCard
+              icon={<ClipboardList className="text-emerald-400" />}
+              title="Secure EMR"
+              desc="Encrypted digital health records accessible from any device, anywhere in the world."
+            />
+            <FeatureCard
+              icon={<Users className="text-purple-400" />}
+              title="Patient Portal"
+              desc="Allow patients to view history, pay bills, and message doctors securely."
+            />
+
+            {/* --- NEW FEATURES ADDED BELOW --- */}
+
+            <FeatureCard
+              icon={<Activity className="text-rose-400" />}
+              title="Telemedicine Ready"
+              desc="Integrated high-definition video calls for remote consultations with built-in note taking."
+            />
+            <FeatureCard
+              icon={<ShieldCheck className="text-amber-400" />}
+              title="Automated Billing"
+              desc="Generate instant invoices, track insurance claims, and process payments automatically."
+            />
+            <FeatureCard
+              icon={<ArrowUpRight className="text-cyan-400" />}
+              title="Advanced Analytics"
+              desc="Visualize clinic growth, patient demographics, and revenue trends with real-time dashboards."
+            />
+          </div>
 
           <div className="grid md:grid-cols-3 gap-6">
             <FeatureCard
@@ -144,15 +180,70 @@ const Home = () => {
           </div>
         </div>
       </section>
+      {/*  */}
+      {/* --- PRICING --- */}
+      <section className="py-32 bg-[#020617]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-white mb-4">
+              Simple, Transparent Pricing
+            </h2>
+            <p className="text-slate-400">
+              Choose the plan that fits your practice scale.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <PriceCard
+              tier="Basic"
+              price="$49"
+              features={["Up to 2 Doctors", "1,000 Patients", "Basic EMR"]}
+            />
+            <PriceCard
+              tier="Professional"
+              price="$129"
+              highlight={true}
+              features={[
+                "Unlimited Doctors",
+                "5,000 Patients",
+                "Telemedicine",
+                "AI Analytics",
+              ]}
+            />
+            <PriceCard
+              tier="Enterprise"
+              price="Custom"
+              features={[
+                "Multi-location Support",
+                "Unlimited Patients",
+                "Dedicated Support",
+                "Custom API",
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/*  */}
+
       {/* --- FOOTER --- */}
       <footer className="border-t border-slate-800 bg-[#020617] py-20">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 text-sm">
-          <div className="md:col-span-1">
-            <div className="flex items-center gap-2 text-white font-bold text-lg mb-6">
-              <Stethoscope className="text-blue-500" /> CuraCloud
+          <div className="md:col-span-1 space-y-4">
+            {/* Logo Section - Left Aligned for Footer */}
+            <div className="flex items-center gap-3 group cursor-pointer">
+              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl group-hover:rotate-[10deg] transition-all duration-300 shadow-lg shadow-blue-500/20">
+                <Activity className="text-white" size={24} />
+              </div>
+              <span className="text-2xl font-black tracking-tighter text-white">
+                Opti<span className="text-blue-500">Clinic</span>
+              </span>
             </div>
-            <p className="text-slate-500 leading-relaxed">
+
+            {/* Description */}
+            <p className="text-slate-500 leading-relaxed text-sm md:text-base">
               Redefining healthcare management with intelligence and speed.
+              Built for the future of medicine.
             </p>
           </div>
           <div>
@@ -229,6 +320,43 @@ const StatBox = ({ number, label }) => (
       {label}
     </p>
   </div>
+);
+// --- YE WALA CODE FILE KE END MEIN PASTE KAREIN ---
+
+const PriceCard = ({ tier, price, features, highlight = false }) => (
+  <motion.div
+    whileHover={{ scale: 1.02 }}
+    className={`p-10 rounded-3xl border transition-all duration-300 ${
+      highlight
+        ? "border-blue-500 bg-blue-500/10 shadow-[0_0_40px_rgba(37,99,235,0.15)]"
+        : "border-slate-800 bg-slate-900/40"
+    }`}
+  >
+    <h4 className="text-slate-400 font-bold mb-2 uppercase text-xs tracking-[0.2em]">
+      {tier}
+    </h4>
+    <div className="text-4xl font-black text-white mb-8">
+      {price}
+      <span className="text-sm text-slate-500 font-normal ml-1">/month</span>
+    </div>
+    <ul className="space-y-4 mb-10">
+      {features.map((f, i) => (
+        <li key={i} className="flex items-center gap-3 text-slate-300 text-sm">
+          <ShieldCheck size={16} className="text-blue-500 shrink-0" />
+          <span>{f}</span>
+        </li>
+      ))}
+    </ul>
+    <button
+      className={`w-full py-4 rounded-2xl font-bold transition-all active:scale-95 ${
+        highlight
+          ? "bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-600/20"
+          : "bg-slate-800 text-white hover:bg-slate-700"
+      }`}
+    >
+      Choose {tier}
+    </button>
+  </motion.div>
 );
 
 export default Home;
