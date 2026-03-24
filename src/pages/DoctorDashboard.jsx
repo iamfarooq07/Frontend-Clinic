@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import api from '../services/api';
+import { motion } from 'framer-motion';
 import { Calendar, FileText, Users, TrendingUp } from 'lucide-react';
+import { StatCard } from '../components/ui/Card';
+
+const statusStyle = {
+  pending:   { bg: 'bg-amber-500/10',  text: 'text-amber-400',  border: 'border-amber-500/20' },
+  confirmed: { bg: 'bg-blue-500/10',   text: 'text-blue-400',   border: 'border-blue-500/20' },
+  completed: { bg: 'bg-emerald-500/10',text: 'text-emerald-400',border: 'border-emerald-500/20' },
+  cancelled: { bg: 'bg-red-500/10',    text: 'text-red-400',    border: 'border-red-500/20' },
+};
 
 const DoctorDashboard = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchAnalytics();
-  }, []);
+  useEffect(() => { fetchAnalytics(); }, []);
 
   const fetchAnalytics = async () => {
     try {
@@ -22,111 +29,65 @@ const DoctorDashboard = () => {
     }
   };
 
-  if (loading) return <Layout><div>Loading...</div></Layout>;
-
-  return (
+  if (loading) return (
     <Layout>
-      <h2 style={{ marginBottom: '20px', fontSize: '24px', fontWeight: '600', color: '#f1f5f9' }}>
-        Doctor Dashboard
-      </h2>
-
-      {/* Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <StatCard
-          icon={<Calendar size={24} />}
-          title="Today's Appointments"
-          value={analytics?.overview?.todayAppointments || 0}
-          color="#3b82f6"
-        />
-        <StatCard
-          icon={<TrendingUp size={24} />}
-          title="Monthly Appointments"
-          value={analytics?.overview?.monthlyAppointments || 0}
-          color="#10b981"
-        />
-        <StatCard
-          icon={<FileText size={24} />}
-          title="Monthly Prescriptions"
-          value={analytics?.overview?.monthlyPrescriptions || 0}
-          color="#f59e0b"
-        />
-        <StatCard
-          icon={<Users size={24} />}
-          title="Total Patients"
-          value={analytics?.overview?.totalPatients || 0}
-          color="#8b5cf6"
-        />
-      </div>
-
-      {/* Recent Appointments */}
-      <div style={{ backgroundColor: '#1e293b', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.3)', border: '1px solid #334155' }}>
-        <h3 style={{ marginBottom: '15px', fontSize: '18px', color: '#f1f5f9' }}>Recent Appointments</h3>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '2px solid #334155' }}>
-                <th style={{ padding: '12px', textAlign: 'left', color: '#94a3b8' }}>Patient</th>
-                <th style={{ padding: '12px', textAlign: 'left', color: '#94a3b8' }}>Date</th>
-                <th style={{ padding: '12px', textAlign: 'left', color: '#94a3b8' }}>Time</th>
-                <th style={{ padding: '12px', textAlign: 'left', color: '#94a3b8' }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(analytics?.recentAppointments || []).map((apt) => (
-                <tr key={apt._id} style={{ borderBottom: '1px solid #334155' }}>
-                  <td style={{ padding: '12px', color: '#e2e8f0' }}>{apt.patientId?.name}</td>
-                  <td style={{ padding: '12px', color: '#e2e8f0' }}>{new Date(apt.date).toLocaleDateString()}</td>
-                  <td style={{ padding: '12px', color: '#e2e8f0' }}>{apt.time}</td>
-                  <td style={{ padding: '12px' }}>
-                    <span style={{
-                      padding: '4px 8px',
-                      borderRadius: '4px',
-                      fontSize: '12px',
-                      backgroundColor: getStatusColor(apt.status),
-                      color: 'white',
-                    }}>
-                      {apt.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="flex justify-center items-center h-64">
+        <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
       </div>
     </Layout>
   );
-};
 
-const StatCard = ({ icon, title, value, color }) => (
-  <div style={{
-    backgroundColor: '#1e293b',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '15px',
-    border: '1px solid #334155',
-  }}>
-    <div style={{ color, backgroundColor: `${color}30`, padding: '12px', borderRadius: '8px' }}>
-      {icon}
-    </div>
-    <div>
-      <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '5px' }}>{title}</p>
-      <p style={{ fontSize: '24px', fontWeight: '600', color: '#f1f5f9' }}>{value}</p>
-    </div>
-  </div>
-);
+  return (
+    <Layout>
+      <div className="space-y-6">
+        <motion.h2 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          className="text-xl font-bold text-slate-100">Doctor Dashboard</motion.h2>
 
-const getStatusColor = (status) => {
-  const colors = {
-    pending: '#f59e0b',
-    confirmed: '#3b82f6',
-    completed: '#10b981',
-    cancelled: '#ef4444',
-  };
-  return colors[status] || '#64748b';
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard icon={<Calendar size={22} />} title="Today's Appointments" value={analytics?.overview?.todayAppointments || 0} color="#3b82f6" delay={0} />
+          <StatCard icon={<TrendingUp size={22} />} title="Monthly Appointments" value={analytics?.overview?.monthlyAppointments || 0} color="#10b981" delay={0.1} />
+          <StatCard icon={<FileText size={22} />} title="Monthly Prescriptions" value={analytics?.overview?.monthlyPrescriptions || 0} color="#f59e0b" delay={0.2} />
+          <StatCard icon={<Users size={22} />} title="Total Patients" value={analytics?.overview?.totalPatients || 0} color="#8b5cf6" delay={0.3} />
+        </div>
+
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+          className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-glass">
+          <h3 className="font-semibold text-slate-200 mb-4">Recent Appointments</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/8">
+                  {['Patient', 'Date', 'Time', 'Status'].map(h => (
+                    <th key={h} className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {(analytics?.recentAppointments || []).map((apt) => {
+                  const s = statusStyle[apt.status] || statusStyle.pending;
+                  return (
+                    <tr key={apt._id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="px-3 py-3 text-slate-300">{apt.patientId?.name}</td>
+                      <td className="px-3 py-3 text-slate-400">{new Date(apt.date).toLocaleDateString()}</td>
+                      <td className="px-3 py-3 text-slate-400">{apt.time}</td>
+                      <td className="px-3 py-3">
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${s.bg} ${s.text} ${s.border}`}>
+                          {apt.status}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            {(!analytics?.recentAppointments?.length) && (
+              <p className="text-center text-slate-500 text-sm py-6">No recent appointments</p>
+            )}
+          </div>
+        </motion.div>
+      </div>
+    </Layout>
+  );
 };
 
 export default DoctorDashboard;

@@ -1,41 +1,28 @@
 import React from 'react';
 
-export const Table = ({ children, className = '' }) => (
-  <div className={`bg-dark-card rounded-lg shadow-md overflow-hidden border border-dark-border ${className}`}>
-    <table className="w-full border-collapse">
-      {children}
+export const Table = ({ headers = [], children, className = '' }) => (
+  <div className={`overflow-x-auto rounded-xl border border-white/8 ${className}`}>
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="bg-white/[0.04] border-b border-white/8">
+          {headers.map((h, i) => (
+            <th key={i} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">
+              {h}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-white/5">{children}</tbody>
     </table>
   </div>
 );
 
-export const TableHead = ({ children }) => (
-  <thead className="bg-dark-bg">
-    {children}
-  </thead>
+export const Tr = ({ children, className = '' }) => (
+  <tr className={`hover:bg-white/[0.03] transition-colors ${className}`}>{children}</tr>
 );
 
-export const TableBody = ({ children }) => (
-  <tbody>
-    {children}
-  </tbody>
-);
-
-export const TableRow = ({ children, className = '' }) => (
-  <tr className={`border-t border-dark-border ${className}`}>
-    {children}
-  </tr>
-);
-
-export const TableHeader = ({ children, className = '' }) => (
-  <th className={`px-3 py-3 text-left font-semibold text-slate-400 ${className}`}>
-    {children}
-  </th>
-);
-
-export const TableCell = ({ children, className = '' }) => (
-  <td className={`px-3 py-3 text-slate-200 ${className}`}>
-    {children}
-  </td>
+export const Td = ({ children, className = '' }) => (
+  <td className={`px-4 py-3 text-slate-300 ${className}`}>{children}</td>
 );
 
 export default Table;
