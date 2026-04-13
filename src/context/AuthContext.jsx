@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 const AuthContext = createContext();
@@ -16,8 +15,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-
-  
   useEffect(() => {
     // Check if user is logged in
     const token = localStorage.getItem("token");
@@ -49,6 +46,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const { data } = await api.post("/auth/register", userData);
+      console.log(data);
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data));
