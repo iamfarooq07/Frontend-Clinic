@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { Plus, AlertTriangle, Crown } from 'lucide-react';
+import { Plus, AlertTriangle } from 'lucide-react';
 
 const Diagnosis = () => {
   const { user } = useAuth();
@@ -42,12 +42,6 @@ const Diagnosis = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (user.subscriptionPlan !== 'pro') {
-      alert('AI Diagnosis requires a Pro subscription. Please upgrade your plan.');
-      return;
-    }
-
     setLoading(true);
     try {
       const { data } = await api.post('/diagnosis', formData);
@@ -56,51 +50,48 @@ const Diagnosis = () => {
       setFormData({ patientId: '', symptoms: '', medicalHistory: '' });
       fetchDiagnosisLogs();
     } catch (error) {
-      if (error.response?.data?.upgrade) {
-        alert('This feature requires a Pro subscription');
-      } else {
-        alert(error.response?.data?.message || 'Error creating diagnosis');
-      }
+      alert(error.response?.data?.message || 'Error creating diagnosis');
     } finally {
       setLoading(false);
     }
   };
 
   const getRiskColor = (level) => {
-    const colors = {
-      low: '#10b981',
-      medium: '#f59e0b',
-      high: '#ef4444',
-      critical: '#dc2626',
-    };
+    const colors = { low: '#10b981', medium: '#f59e0b', high: '#ef4444', critical: '#dc2626' };
     return colors[level] || '#64748b';
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: '8px 12px',
+    border: '1px solid #475569',
+    borderRadius: '6px',
+    backgroundColor: '#0f172a',
+    color: '#e2e8f0',
+    fontSize: '14px',
+    boxSizing: 'border-box',
+  };
+
+  const labelStyle = {
+    display: 'block',
+    marginBottom: '6px',
+    fontSize: '14px',
+    fontWeight: '500',
+    color: '#94a3b8',
   };
 
   return (
     <Layout>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div>
-          <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '5px' }}>AI Diagnosis</h2>
-          {user.subscriptionPlan !== 'pro' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f59e0b', fontSize: '14px' }}>
-              <Crown size={16} />
-              <span>Pro Plan Required</span>
-            </div>
-          )}
-        </div>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#f1f5f9' }}>AI Diagnosis</h2>
         <button
           onClick={() => setShowModal(true)}
-          disabled={user.subscriptionPlan !== 'pro'}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '10px 20px',
-            backgroundColor: user.subscriptionPlan === 'pro' ? '#3b82f6' : '#94a3b8',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: user.subscriptionPlan === 'pro' ? 'pointer' : 'not-allowed',
+            display: 'flex', alignItems: 'center', gap: '8px',
+            padding: '10px 20px', backgroundColor: '#3b82f6',
+            color: 'white', border: 'none', borderRadius: '6px',
+            cursor: 'pointer', fontSize: '14px', fontWeight: '500',
           }}
         >
           <Plus size={18} />
@@ -108,148 +99,129 @@ const Diagnosis = () => {
         </button>
       </div>
 
-      {user.subscriptionPlan !== 'pro' && (
-        <div style={{
-          backgroundColor: '#fef3c7',
-          border: '1px solid #fbbf24',
-          padding: '15px',
-          borderRadius: '8px',
-          marginBottom: '20px',
-        }}>
-          <p style={{ fontSize: '14px', color: '#92400e' }}>
-            Upgrade to Pro Plan to unlock AI-powered diagnosis features including symptom analysis, risk assessment, and treatment recommendations.
-          </p>
-        </div>
-      )}
-
-      <div style={{ display: 'grid', gap: '20px' }}>
+      {/* Diagnosis Cards */}
+      <div style={{ display: 'grid', gap: '16px' }}>
+        {diagnosisLogs.length === 0 && (
+          <div style={{
+            backgroundColor: '#1e293b', border: '1px solid #334155',
+            borderRadius: '8px', padding: '40px', textAlign: 'center', color: '#64748b',
+          }}>
+            No diagnosis records found. Click "New Diagnosis" to start.
+          </div>
+        )}
         {diagnosisLogs.map((log) => (
-          <div
-            key={log._id}
-            style={{
-              backgroundColor: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+          <div key={log._id} style={{
+            backgroundColor: '#1e293b', border: '1px solid #334155',
+            borderRadius: '8px', padding: '20px',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
               <div>
-                <h3 style={{ fontSize: '18px', marginBottom: '5px' }}>{log.patientId?.name}</h3>
-                <p style={{ fontSize: '14px', color: '#64748b' }}>
-                  {new Date(log.createdAt).toLocaleDateString()} - Dr. {log.doctorId?.name}
+                <h3 style={{ fontSize: '17px', fontWeight: '600', color: '#f1f5f9', marginBottom: '4px' }}>
+                  {log.patientId?.name}
+                </h3>
+                <p style={{ fontSize: '13px', color: '#64748b' }}>
+                  {new Date(log.createdAt).toLocaleDateString()} — Dr. {log.doctorId?.name}
                 </p>
               </div>
               <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 12px',
+                display: 'flex', alignItems: 'center', gap: '6px',
+                padding: '6px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: '600',
                 backgroundColor: `${getRiskColor(log.riskLevel)}20`,
                 color: getRiskColor(log.riskLevel),
-                borderRadius: '6px',
-                fontSize: '14px',
-                fontWeight: '600',
               }}>
-                <AlertTriangle size={16} />
-                {log.riskLevel.toUpperCase()} RISK
+                <AlertTriangle size={14} />
+                {log.riskLevel?.toUpperCase()} RISK
               </div>
             </div>
 
-            <div style={{ marginBottom: '15px' }}>
-              <p style={{ fontSize: '14px', fontWeight: '600', marginBottom: '5px' }}>Symptoms:</p>
-              <p style={{ fontSize: '14px', color: '#334155' }}>{log.symptoms}</p>
+            <div style={{ marginBottom: '12px' }}>
+              <p style={{ fontSize: '13px', fontWeight: '600', color: '#94a3b8', marginBottom: '4px' }}>Symptoms</p>
+              <p style={{ fontSize: '14px', color: '#e2e8f0' }}>{log.symptoms}</p>
             </div>
 
             {log.aiResponse && (
-              <>
-                <div style={{ marginBottom: '15px' }}>
-                  <p style={{ fontSize: '14px', fontWeight: '600', marginBottom: '5px' }}>Possible Conditions:</p>
-                  <ul style={{ marginLeft: '20px', fontSize: '14px', color: '#334155' }}>
-                    {log.aiResponse.possibleConditions?.map((condition, idx) => (
-                      <li key={idx}>{condition}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                {log.aiResponse.suggestedTests && log.aiResponse.suggestedTests.length > 0 && (
-                  <div style={{ marginBottom: '15px' }}>
-                    <p style={{ fontSize: '14px', fontWeight: '600', marginBottom: '5px' }}>Suggested Tests:</p>
-                    <ul style={{ marginLeft: '20px', fontSize: '14px', color: '#334155' }}>
-                      {log.aiResponse.suggestedTests.map((test, idx) => (
-                        <li key={idx}>{test}</li>
+              <div style={{ display: 'grid', gap: '12px', borderTop: '1px solid #334155', paddingTop: '12px' }}>
+                {log.aiResponse.possibleConditions?.length > 0 && (
+                  <div>
+                    <p style={{ fontSize: '13px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>Possible Conditions</p>
+                    <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                      {log.aiResponse.possibleConditions.map((c, i) => (
+                        <li key={i} style={{ fontSize: '14px', color: '#e2e8f0', marginBottom: '2px' }}>{c}</li>
                       ))}
                     </ul>
                   </div>
                 )}
-
-                {log.aiResponse.recommendations && (
+                {log.aiResponse.suggestedTests?.length > 0 && (
                   <div>
-                    <p style={{ fontSize: '14px', fontWeight: '600', marginBottom: '5px' }}>Recommendations:</p>
-                    <p style={{ fontSize: '14px', color: '#334155' }}>{log.aiResponse.recommendations}</p>
+                    <p style={{ fontSize: '13px', fontWeight: '600', color: '#94a3b8', marginBottom: '6px' }}>Suggested Tests</p>
+                    <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                      {log.aiResponse.suggestedTests.map((t, i) => (
+                        <li key={i} style={{ fontSize: '14px', color: '#e2e8f0', marginBottom: '2px' }}>{t}</li>
+                      ))}
+                    </ul>
                   </div>
                 )}
-              </>
+                {log.aiResponse.recommendations && (
+                  <div>
+                    <p style={{ fontSize: '13px', fontWeight: '600', color: '#94a3b8', marginBottom: '4px' }}>Recommendations</p>
+                    <p style={{ fontSize: '14px', color: '#e2e8f0' }}>{log.aiResponse.recommendations}</p>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         ))}
       </div>
 
+      {/* Modal */}
       {showModal && (
         <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000,
         }}>
           <div style={{
-            backgroundColor: 'white',
-            padding: '30px',
-            borderRadius: '8px',
-            width: '90%',
-            maxWidth: '600px',
+            backgroundColor: '#1e293b', border: '1px solid #334155',
+            padding: '30px', borderRadius: '8px',
+            width: '90%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto',
           }}>
-            <h3 style={{ marginBottom: '20px' }}>AI Symptom Analysis</h3>
+            <h3 style={{ marginBottom: '24px', fontSize: '20px', fontWeight: '600', color: '#f1f5f9' }}>
+              AI Symptom Analysis
+            </h3>
             <form onSubmit={handleSubmit}>
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Patient *</label>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={labelStyle}>Patient *</label>
                 <select
                   required
                   value={formData.patientId}
                   onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #e2e8f0', borderRadius: '4px' }}
+                  style={inputStyle}
                 >
                   <option value="">Select Patient</option>
                   {patients.map((p) => (
-                    <option key={p._id} value={p._id}>{p.name} - {p.age}y, {p.gender}</option>
+                    <option key={p._id} value={p._id}>{p.name} — {p.age}y, {p.gender}</option>
                   ))}
                 </select>
               </div>
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Symptoms *</label>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={labelStyle}>Symptoms *</label>
                 <textarea
                   required
                   value={formData.symptoms}
                   onChange={(e) => setFormData({ ...formData, symptoms: e.target.value })}
                   rows="4"
                   placeholder="Describe the symptoms in detail..."
-                  style={{ width: '100%', padding: '8px', border: '1px solid #e2e8f0', borderRadius: '4px' }}
+                  style={{ ...inputStyle, resize: 'vertical' }}
                 />
               </div>
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Medical History</label>
+              <div style={{ marginBottom: '24px' }}>
+                <label style={labelStyle}>Medical History</label>
                 <textarea
                   value={formData.medicalHistory}
                   onChange={(e) => setFormData({ ...formData, medicalHistory: e.target.value })}
                   rows="3"
                   placeholder="Any relevant medical history..."
-                  style={{ width: '100%', padding: '8px', border: '1px solid #e2e8f0', borderRadius: '4px' }}
+                  style={{ ...inputStyle, resize: 'vertical' }}
                 />
               </div>
               <div style={{ display: 'flex', gap: '10px' }}>
@@ -257,13 +229,10 @@ const Diagnosis = () => {
                   type="submit"
                   disabled={loading}
                   style={{
-                    flex: 1,
-                    padding: '10px',
-                    backgroundColor: loading ? '#94a3b8' : '#3b82f6',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    cursor: loading ? 'not-allowed' : 'pointer',
+                    flex: 1, padding: '10px', border: 'none', borderRadius: '6px',
+                    backgroundColor: loading ? '#475569' : '#3b82f6',
+                    color: 'white', cursor: loading ? 'not-allowed' : 'pointer',
+                    fontWeight: '500', fontSize: '14px',
                   }}
                 >
                   {loading ? 'Analyzing...' : 'Analyze with AI'}
@@ -273,13 +242,10 @@ const Diagnosis = () => {
                   onClick={() => setShowModal(false)}
                   disabled={loading}
                   style={{
-                    flex: 1,
-                    padding: '10px',
-                    backgroundColor: '#e2e8f0',
-                    color: '#334155',
-                    border: 'none',
-                    borderRadius: '6px',
+                    flex: 1, padding: '10px', border: 'none', borderRadius: '6px',
+                    backgroundColor: '#334155', color: '#e2e8f0',
                     cursor: loading ? 'not-allowed' : 'pointer',
+                    fontWeight: '500', fontSize: '14px',
                   }}
                 >
                   Cancel
